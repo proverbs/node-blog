@@ -1,18 +1,22 @@
 const express = require('express')
 const router = express.Router()
-/*
 
-const checkLogout = require('../middlewares/check').checkLogout
+const checkNotLogin = require('../middlewares/check').checkNotLogin
+
 // GET, /signin, sign in
-router.get('/', checkLogout, function (req, res, next) {
+// pass
+router.get('/', checkNotLogin, function (req, res, next) {
 	res.render('signin')
 })
 
 // POST, /signin, post signin info
-router.post('/', checkLogout, function (req, res, next) {
+// pass
+// flash does not work, when signing in unsuccessfully
+router.post('/', checkNotLogin, function (req, res, next) {
 	const name = req.fields.name // formidable fields???
 	const password = req.fields.password
 
+	console.log('------------------------' + name + '-' + password)
 	// check params
 	try {
 		if (!name.length) {
@@ -27,22 +31,24 @@ router.post('/', checkLogout, function (req, res, next) {
 	}
 
 	let user = {
-		name: name,
-		password: password,
+		name: 'proverbs',
+		password: 'proverbs',
 		gender: 'm',
 		bio: 'bio',
 		avatar: 'avatar'
 	}
+
 	// query the database and check if username and password are correct
+	/*query..., user now is the return value*/
 	if (name.toString() !== user.name.toString()) {
-		req.flash('user not exists.')
+		req.flash('User not exists.')
 		return res.redirect('back')
 	} else {
 		if (password.toString() === user.password.toString()) {
 			req.flash('success', 'Login Successfully.')
 			// writer session ???
 			req.session.user = {name: user.name}
-			res.redirect('/posts')
+			return res.redirect('/posts')
 		} else {
 			req.flash('error', 'Wrong Username or Password')
 			return res.redirect('back')
@@ -53,6 +59,6 @@ router.post('/', checkLogout, function (req, res, next) {
 })
 
 
-*/
+
 // export router for 'signin'
 module.exports = router

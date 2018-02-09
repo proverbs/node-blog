@@ -1,6 +1,6 @@
 const path = require('path')
 const express = require('express')
-const pkg = require('./package') // package.json
+const pkg = require('./package') // ./package.json
 const routes = require('./routes') // routes/index.js, app.use to bind urls and route handlers
 
 const formidable = require('express-formidable')
@@ -15,7 +15,7 @@ const app = express()
 app.set('views', path.join(__dirname, 'views')) // views dir
 app.set('view engine', 'ejs') // view engine
 
-app.set('static', express.static(path.join(__dirname, 'public'))) // static dir
+app.use(express.static(path.join(__dirname, 'public'))) // static dir
 
 
 // set locals(global variable of app) for ejs engine
@@ -24,9 +24,7 @@ app.locals.blog = {
     description: pkg.description
 }
 
-
-
-// add session(with mongodb)
+// add session, next()??
 app.use(session({
     name: config.session.key,
     secret: config.session.secret,
@@ -36,8 +34,10 @@ app.use(session({
     }
 }))
 
+// add flash, next()???
 app.use(flash())
 
+// add form handler, next()????
 app.use(formidable({
     uploadDir: path.join(__dirname, 'public/img'),
     keepExtensions: true
@@ -51,17 +51,20 @@ app.use(function (req, res, next) {
     next()
 })
 
-
+// add routers, next() ???
 routes(app)
 
 
-// print error using flash
+// add error handler, print error using flash
+/*
 app.use(function (err, req, res, next) {
     console.error(err)
     req.flash('error', err.message)
     res.redirect('/posts')
 })
+*/
 
+// main
 if (require.main == module) {
     // run directly
     app.listen(config.port, function () {

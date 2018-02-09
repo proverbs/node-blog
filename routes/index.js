@@ -7,6 +7,9 @@ const commentsRouter = require('./comments')
 
 module.exports = function (app) {
     // run in order ?????
+    app.get('/', function (req, res) {
+        return res.redirect('/posts')
+    })
     app.use('/signup', signupRouter)
     app.use('/signin', signinRouter)
     app.use('/signout', signoutRouter)
@@ -14,7 +17,7 @@ module.exports = function (app) {
     app.use('/comments', commentsRouter)
     
     app.use(function (req, res) {
-        if (res.headersSent) {
+        if (!res.headersSent) {
             res.status(404).render('404')
         }
     })

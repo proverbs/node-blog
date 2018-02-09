@@ -1,24 +1,29 @@
 const express = require('express')
 const router = express.Router()
 const path = require('path')
+const fs = require('fs')
 
-const checkLogout = require('../middlewares/check').checkLogout
-/*
+const checkNotLogin = require('../middlewares/check').checkNotLogin
+
 
 // GET, /signup, sign up
-router.get('/', checkLogout, function (req, res, next) {
+// pass
+router.get('/', checkNotLogin, function (req, res, next) {
 	res.render('signup')
 })
 
 // POST, /signup, post info of a new user
-router.post('/', checkLogout, function (req, res, next) {
+// pass
+router.post('/', checkNotLogin, function (req, res, next) {
 	const name = req.fields.name
 	const gender = req.fields.gender
 	const bio = req.fields.bio
-	const avatar = req.fields.avatar.path.split(path.sep).pop() // ????
+	const avatar = req.files.avatar.path.split(path.sep).pop() // ????
 	let password = req.fields.password // difference between let and var
 	const repassword = req.fields.repassword
 
+	console.log('---------------' + name + '-' + gender + '-' + bio + '-' + avatar + '-' + password)
+	
 	try {
 		if (name.length < 1 || name.length > 10) {
 			throw new Error('Username should be no more than 10 characters')
@@ -29,7 +34,7 @@ router.post('/', checkLogout, function (req, res, next) {
 		if (bio.length < 1 || bio.length > 30) {
 			throw new Error('Bio should be no more than 30 characters')		
 		}
-		if (!req.fields.avatar.name) {
+		if (!req.files.avatar.name) {
 			throw new Error('Please upload an avatar')
 		}
 		if (password.length < 6 || password.length > 18) {
@@ -39,13 +44,14 @@ router.post('/', checkLogout, function (req, res, next) {
 			throw new Error('Passwords not same')
 		}
 	} catch (err) {
+		console.log('----------------------------------' + 'catch error')
 		// delete avatar async
 		fs.unlink(req.files.avatar.path) // ???
 		req.flash('error', err.message)
-		return res.redirect('/singup')
+		return res.redirect('/signup')
 	}
+	
 
-	password = sha1(password)
 	let user = {
 		name: name,
 		password: password,
@@ -55,11 +61,11 @@ router.post('/', checkLogout, function (req, res, next) {
 	}
 
 	// write into database and check if the username exists
+	/*query and write...*/
 	req.session.user = {name: user.name}
 	req.flash('success', 'Sign up successfully')
-	res.redirect('/posts')
+	return res.redirect('/posts')
 
-	
 	//if (e.message.match('duplicate key')) {
 	//	// string match
 	//	req.flash('error', 'Username exists')
@@ -68,7 +74,7 @@ router.post('/', checkLogout, function (req, res, next) {
 	//next(e) // ???????error next
 	
 })
-*/
+
 
 // export router for '/signup'
 module.exports = router

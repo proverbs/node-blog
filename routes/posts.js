@@ -5,18 +5,21 @@ const router = express.Router()
 const checkLogin = require('../middlewares/check').checkLogin
 
 // GET, /posts?author=xxx, show posts
+// pass
 router.get('/', function (req, res, next) {
-	const author = req.query.author // from url
+	const author = req.query.author // from url, author may be undefined
 
 	// query from database, get posts
 	posts = [{
 		author: 'proverbs',
 		title: 'title-1',
-		content: 'content-1'
+		content: 'content-1',
+		_id: 'post-id1'
 	}, {
 		author: 'proverbs',
 		title: 'title-2',
-		content: 'content-2'
+		content: 'content-2',
+		_id: 'post-id2'
 	}]
 
 	try {
@@ -29,22 +32,26 @@ router.get('/', function (req, res, next) {
 })
 
 // GET, /posts/create, show blog-post
+// pass
 router.get('/create', checkLogin, function (req, res, next) {
 	res.render('create') // render views/create.ejs
 })
 
 // POST, /posts/create, post a blog
+// pass
+// all cannot flash
 router.post('/create', checkLogin, function (req, res, next) {
 	const author = req.session.user.name
 	const title = req.fields.title // fields from form
 	const content = req.fields.content
 
+	console.log('------------------------' + author + '-' + title + '-' + content)
 	try {
 		if (!title.length) {
-			throw new Error('请填写标题')
+			throw new Error('Please fill out title.')
 		}
 		if (!content.length) {
-			throw new Error('请填写内容')
+			throw new Error('Please fill out content')
 		}
 	} catch (e) {
 		req.flash('error', e.message)
@@ -60,47 +67,54 @@ router.post('/create', checkLogin, function (req, res, next) {
 	try {
       // write post into database
       /*...*/
-      req.flash('success', '发表成功')
+      req.flash('success', 'Post successfully')
       /*
       res.redirect(`/posts/${post._id}`)
       */
-      res.redirect('/posts')
+      return res.redirect('/posts')
 	} catch(err) {
-		next(err)
+		//next(err)
+		console.log('----------------------------------' + 'catch error')
 	}	
 })
 
 // GET, /posts/:postId, show a posted blog
-router.get('/:postId', checkLogin, function (req, res, next) {
+// pass
+router.get('/:postId', function (req, res, next) {
 	const postId = req.params.postId
 
 	// query a post and its comments from database
 	try {
+		// query...
 		const post = {
 			author: 'proverbs',
 			title: postId,
-			content: 'post content'
+			content: 'post content',
+			_id: postId
 		}
 		const comments = [{
 			author: 'proverbs',
 			postId: postId,
-			content: 'comment content'
+			content: 'comment content',
+			_id: 'post-id1'
 		}]
 
 		if (!post) {
 			throw new Error('Post not exists')
 		}
-		res.render('edit', {
+		return res.render('post', {
 			post: post,
 			comments: comments
 		})
 	} catch (err) {
-		next(err)
+		//next(err)
 	}
 
 })
 
 // GET, /posts/:postId/edit, show posted-blog-edit
+// pass
+// do not have link in /posts/:postId
 router.get('/:postId/edit', checkLogin, function (req, res, next) {
 	const postId = req.params.postId
 	const author = req.session.user.name
@@ -108,6 +122,13 @@ router.get('/:postId/edit', checkLogin, function (req, res, next) {
 	// query post from database
 
 	try {
+		// query
+		const post = {
+			author: 'proverbs',
+			title: postId,
+			content: 'post content',
+			_id: postId
+		}
 		/*
 		if (!post) {
 			throw new Error('该文章不存在')
@@ -116,15 +137,17 @@ router.get('/:postId/edit', checkLogin, function (req, res, next) {
 			throw new Error('权限不足')
 		}
 		*/
-		res.render('edit', {
+		return res.render('edit', {
 			post: post
 		})
 	} catch(err) {
-		next(err)
+		//next(err)
 	}
 })
 
 // POST, /posts/:postId/edit, modified a posted blog
+// pass
+// cannot flash, do not have link
 router.post('/:postId/edit', checkLogin, function (req, res, next) {
 	const postId = req.params.postId
 	const author = req.session.user.name
@@ -143,8 +166,9 @@ router.post('/:postId/edit', checkLogin, function (req, res, next) {
 		return res.redirect('back')
 	}
 
-	// query post from database
+	// write post back to database
 	try {
+		// write back
 		/*
 		if (!post) {
 			throw new Error('Post not exists')
@@ -154,13 +178,15 @@ router.post('/:postId/edit', checkLogin, function (req, res, next) {
 		}
 		*/
 		req.flash('success', 'Edit successfully')
-		res.redirect(`/posts/${postId}`)
+		return res.redirect(`/posts/${postId}`)
 	} catch (err) {
-		next(err)
+		//next(err)
 	}
 })
 
 // GET, /posts/:postId/remove, delete a posted blog
+// pass
+// cannot flash, do not have link
 router.get('/:postId/remove', checkLogin, function (req, res, next) {
 	const postId = req.params.postId
 	const author = req.session.user.name
@@ -176,9 +202,9 @@ router.get('/:postId/remove', checkLogin, function (req, res, next) {
 		}
 		*/
 		req.flash('success', 'Delete successfully')
-		res.redirect('/posts')
+		return res.redirect('/posts')
 	} catch (err) {
-		next(err)
+		//next(err)
 	}
 })
 
