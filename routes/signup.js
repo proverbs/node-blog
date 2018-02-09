@@ -1,11 +1,9 @@
 const express = require('express')
-const router = express.router()
-const sha1 = require('sha1')
+const router = express.Router()
 const path = require('path')
-const fs = require('fs')
 
-const UserModel = require('../models/users')
 const checkLogout = require('../middlewares/check').checkLogout
+/*
 
 // GET, /signup, sign up
 router.get('/', checkLogout, function (req, res, next) {
@@ -13,7 +11,7 @@ router.get('/', checkLogout, function (req, res, next) {
 })
 
 // POST, /signup, post info of a new user
-router.get('/', checkLogout, function (req, res, next) {
+router.post('/', checkLogout, function (req, res, next) {
 	const name = req.fields.name
 	const gender = req.fields.gender
 	const bio = req.fields.bio
@@ -56,21 +54,21 @@ router.get('/', checkLogout, function (req, res, next) {
 		avatar: avatar
 	}
 
-	UserModel.create(user).then(function (result) {
-		user = result.ops[0] // ???
-		delete user.password
-		req.session.user = user
-		req.flash('success', 'Sign up successfully')
-		res.redirect('/posts')
-	}).catch(function (e) {
-		if (e.message.match('duplicate key')) {
-			// string match
-			req.flash('error', 'Username exists')
-			return req.redirect('/signup')
-		}
-		next(e) // ???????
-	})
+	// write into database and check if the username exists
+	req.session.user = {name: user.name}
+	req.flash('success', 'Sign up successfully')
+	res.redirect('/posts')
+
+	
+	//if (e.message.match('duplicate key')) {
+	//	// string match
+	//	req.flash('error', 'Username exists')
+	//	return res.redirect('/signup')
+	//}
+	//next(e) // ???????error next
+	
 })
+*/
 
 // export router for '/signup'
 module.exports = router

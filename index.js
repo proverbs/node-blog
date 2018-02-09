@@ -1,17 +1,14 @@
 const path = require('path')
 const express = require('express')
-const routes = require('./routes')
 const pkg = require('./package') // package.json
 const routes = require('./routes') // routes/index.js, app.use to bind urls and route handlers
 
 const formidable = require('express-formidable')
 
-const session = require('express-session')
-const config = require('config-lite')(__dirname) //??
+const session = require('express-session') // ??
+const config = require('config-lite')(__dirname) //?? open __dirname/config/
 const MongoStore = require('connect-mongo')(session) //?? use express-session
 const flash = require('connect-flash') //??
-const winston = require('winston')
-const expressWinston = require('express-winston')
 
 
 const app = express()
@@ -33,20 +30,17 @@ app.locals.blog = {
 app.use(session({
     name: config.session.key,
     secret: config.session.secret,
-    resave: True,
+    resave: true,
     cookie: {
         maxAge: config.session.maxAge
-    },
-    store: new MongoStore({
-        url: config.mongodb
-    })
+    }
 }))
 
 app.use(flash())
 
 app.use(formidable({
     uploadDir: path.join(__dirname, 'public/img'),
-    keepExtensions: True
+    keepExtensions: true
 }))
 
 // add middleware: set response locals(local variable of response/render)
@@ -57,39 +51,15 @@ app.use(function (req, res, next) {
     next()
 })
 
-// add log without error
-app.use(expressWinston.logger({
-    transports: [
-        new winston.transports.Console({
-            json: True,
-            colorize: True
-        }),
-        new winston.transports.File({
-            fileName: 'logs/success.log'
-        })
-    ]
-}))
 
 routes(app)
 
-// add log with error
-app.use(expressWinston.errorLogger({
-    transports: [
-        new winston.transports.Console({
-            json: True,
-            colorize: True
-        }),
-        new winston.transports.File({
-            fileName: 'logs/error.log'
-        })
-    ]
-}))
 
 // print error using flash
 app.use(function (err, req, res, next) {
     console.error(err)
     req.flash('error', err.message)
-    req.redirect('/posts')
+    res.redirect('/posts')
 })
 
 if (require.main == module) {
@@ -99,6 +69,6 @@ if (require.main == module) {
     })
 } else {
     // called by others
-    modules.exports = app
+    module.exports = app
 }
 

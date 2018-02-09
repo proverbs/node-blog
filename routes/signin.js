@@ -1,10 +1,8 @@
 const express = require('express')
-const router = express.router()
-const sha1 = require('sha1')
+const router = express.Router()
+/*
 
-const UserModel = require('../models/users')
 const checkLogout = require('../middlewares/check').checkLogout
-
 // GET, /signin, sign in
 router.get('/', checkLogout, function (req, res, next) {
 	res.render('signin')
@@ -28,25 +26,33 @@ router.post('/', checkLogout, function (req, res, next) {
 		return res.redirect('back') // return???
 	}
 
-	// UserModel return the instance of user, then run the anoneymous func
-	UserModel.getUserByName(name).then(function (user) {
-		if (!user) {
-			req.flash('user not exists.')
-			return res.redirect('back')
+	let user = {
+		name: name,
+		password: password,
+		gender: 'm',
+		bio: 'bio',
+		avatar: 'avatar'
+	}
+	// query the database and check if username and password are correct
+	if (name.toString() !== user.name.toString()) {
+		req.flash('user not exists.')
+		return res.redirect('back')
+	} else {
+		if (password.toString() === user.password.toString()) {
+			req.flash('success', 'Login Successfully.')
+			// writer session ???
+			req.session.user = {name: user.name}
+			res.redirect('/posts')
 		} else {
-			if (sha1(password) === user.password) {
-				req.flash('success', 'Login Successfully.')
-				// writer session ???
-				delete user.password
-				req.session.user = user
-				res.redirect('/posts')
-			} else {
-				req.flash('error', 'Wrong Username or Password')
-				return res.redirect('back')
-			}
+			req.flash('error', 'Wrong Username or Password')
+			return res.redirect('back')
 		}
-	}).catch(next) // mongo????
+	}
+
+	// next(e)?????? error next()
 })
 
+
+*/
 // export router for 'signin'
 module.exports = router

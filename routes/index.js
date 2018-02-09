@@ -5,15 +5,12 @@ const postsRouter = require('./posts')
 const commentsRouter = require('./comments')
 
 
-modules.exports = function (app) {
+module.exports = function (app) {
     // run in order ?????
-    app.get('/', function (req, res) {
-        res.redirect('/post')
-    })
     app.use('/signup', signupRouter)
     app.use('/signin', signinRouter)
     app.use('/signout', signoutRouter)
-    app.use('/posts', postRouter)
+    app.use('/posts', postsRouter)
     app.use('/comments', commentsRouter)
     
     app.use(function (req, res) {
