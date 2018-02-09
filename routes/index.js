@@ -1,20 +1,14 @@
-const signupRouter = require('./signup')
-const signinRouter = require('./signin')
-const signoutRouter = require('./signout')
-const postsRouter = require('./posts')
-const commentsRouter = require('./comments')
-
 
 module.exports = function (app) {
     // run in order ?????
     app.get('/', function (req, res) {
         return res.redirect('/posts')
     })
-    app.use('/signup', signupRouter)
-    app.use('/signin', signinRouter)
-    app.use('/signout', signoutRouter)
-    app.use('/posts', postsRouter)
-    app.use('/comments', commentsRouter)
+    app.use('/signup', require('./signup'))
+    app.use('/signin', require('./signin'))
+    app.use('/signout', require('./signout'))
+    app.use('/posts', require('./posts'))
+    app.use('/comments', require('./comments'))
     
     app.use(function (req, res) {
         if (!res.headersSent) {
