@@ -11,7 +11,6 @@ router.get('/', checkNotLogin, function (req, res, next) {
 
 // POST, /signin, post signin info
 // pass
-// flash does not work, when signing in unsuccessfully
 router.post('/', checkNotLogin, function (req, res, next) {
 	const name = req.fields.name // formidable fields???
 	const password = req.fields.password
@@ -41,7 +40,7 @@ router.post('/', checkNotLogin, function (req, res, next) {
 	// query the database and check if username and password are correct
 	/*query..., user now is the return value*/
 	if (name.toString() !== user.name.toString()) {
-		req.flash('User not exists.')
+		req.flash('error', 'User not exists.')
 		return res.redirect('back')
 	} else {
 		if (password.toString() === user.password.toString()) {

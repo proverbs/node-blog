@@ -4,10 +4,10 @@ const pkg = require('./package') // ./package.json
 const routes = require('./routes') // routes/index.js, app.use to bind urls and route handlers
 
 const formidable = require('express-formidable')
+const cookieParser = require('cookie-parser')
 
 const session = require('express-session') // ??
 const config = require('config-lite')(__dirname) //?? open __dirname/config/
-const MongoStore = require('connect-mongo')(session) //?? use express-session
 const flash = require('connect-flash') //??
 
 
@@ -23,6 +23,9 @@ app.locals.blog = {
     title: pkg.name,
     description: pkg.description
 }
+
+// flash need cookie-parser
+app.use(cookieParser('secret'))
 
 // add session, next()??
 app.use(session({
@@ -56,13 +59,12 @@ routes(app)
 
 
 // add error handler, print error using flash
-/*
+
 app.use(function (err, req, res, next) {
     console.error(err)
     req.flash('error', err.message)
     res.redirect('/posts')
 })
-*/
 
 // main
 if (require.main == module) {

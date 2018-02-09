@@ -39,7 +39,6 @@ router.get('/create', checkLogin, function (req, res, next) {
 
 // POST, /posts/create, post a blog
 // pass
-// all cannot flash
 router.post('/create', checkLogin, function (req, res, next) {
 	const author = req.session.user.name
 	const title = req.fields.title // fields from form
@@ -147,7 +146,7 @@ router.get('/:postId/edit', checkLogin, function (req, res, next) {
 
 // POST, /posts/:postId/edit, modified a posted blog
 // pass
-// cannot flash, do not have link
+// do not have link
 router.post('/:postId/edit', checkLogin, function (req, res, next) {
 	const postId = req.params.postId
 	const author = req.session.user.name
@@ -186,7 +185,7 @@ router.post('/:postId/edit', checkLogin, function (req, res, next) {
 
 // GET, /posts/:postId/remove, delete a posted blog
 // pass
-// cannot flash, do not have link
+// do not have link
 router.get('/:postId/remove', checkLogin, function (req, res, next) {
 	const postId = req.params.postId
 	const author = req.session.user.name

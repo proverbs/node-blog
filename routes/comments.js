@@ -6,7 +6,6 @@ const checkLogin = require('../middlewares/check').checkLogin
 
 // POST, /comments, add a comment(cannot visit directly)
 // pass 
-// flash does not work
 router.post('/', checkLogin, function (req, res, next) {
 	const author = req.session.user.name
 	const postId = req.fields.postId // ???
@@ -36,10 +35,11 @@ router.post('/', checkLogin, function (req, res, next) {
 
 // GET, /commnets/:commentId/remove
 // pass
-// do not have link
+// do not have link, flash works only when visit with link, not url
 router.get('/:commentId/remove', checkLogin, function (req, res, next) {
-	const commentId = req.params.commentsId //get from url
-	const author = req.session.name
+	const commentId = req.params.commentId //get from url
+	const author = req.session.user.name
+	console.log('-----------------' + commentId + '-' + author)
 
 	// delete comment from database
 	try {
@@ -56,7 +56,8 @@ router.get('/:commentId/remove', checkLogin, function (req, res, next) {
 		return res.redirect('back')
 
 	} catch (err) {
-		// next(e)
+		console.log('-------------------fuck')
+		//next(e)
 	}
 })
 

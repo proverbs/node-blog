@@ -14,6 +14,7 @@ router.get('/', checkNotLogin, function (req, res, next) {
 
 // POST, /signup, post info of a new user
 // pass
+// link not deleted
 router.post('/', checkNotLogin, function (req, res, next) {
 	const name = req.fields.name
 	const gender = req.fields.gender
