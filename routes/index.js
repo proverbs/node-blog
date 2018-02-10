@@ -1,6 +1,6 @@
 
 module.exports = function (app) {
-    // run in order ?????
+    // following middlewares will run in order
     app.get('/', function (req, res) {
         return res.redirect('/posts')
     })
@@ -10,9 +10,12 @@ module.exports = function (app) {
     app.use('/posts', require('./posts'))
     app.use('/comments', require('./comments'))
     
-    app.use(function (req, res) {
+    app.use(function (req, res, next) {
         if (!res.headersSent) {
-            return res.status(404).render('404')
+            res.status(404).render('404')
+            next(new Error('404 NOT FOUND'))
+            // next can only throw error
+            // more: https://expressjs.com/en/guide/error-handling.html
         }
     })
 }

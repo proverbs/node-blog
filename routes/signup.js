@@ -38,14 +38,13 @@ router.post('/', checkNotLogin, function (req, res, next) {
 		if (!req.files.avatar.name) {
 			throw new Error('Please upload an avatar')
 		}
-		if (password.length < 6 || password.length > 18) {
+		if (password.length < 4 || password.length > 18) {
 			throw new Error('Password should be no less than 6 characters and no more than 18 characters')
 		}
 		if (password !== repassword) {
 			throw new Error('Passwords not same')
 		}
 	} catch (err) {
-		console.log('----------------------------------' + 'catch error')
 		// delete avatar async
 		fs.unlink(req.files.avatar.path) // ???
 		req.flash('error', err.message)
@@ -62,18 +61,30 @@ router.post('/', checkNotLogin, function (req, res, next) {
 	}
 
 	// write into database and check if the username exists
-	/*query and write...*/
-	req.session.user = {name: user.name}
-	req.flash('success', 'Sign up successfully')
-	return res.redirect('/posts')
+	fs.readFile('users.json', 'utf-8', function (err, allUsers) {
+		if (!err) {
+			allUsers = JSON.parse(allUsers)
+			for (let i = 0; i < allUsers.length; i ++) {
+				if (allUsers.name === name) {
+					req.flash('error', 'Username exists')
+					return res.redirect('back')
+				}
+			}
+			allUsers.push(user)
+			fs.writeFile('users.json', JSON.stringify(allUsers), function (err) {
+				if (!err) {
+					req.session.user = {name: user.name}
+					req.flash('success', 'Sign up successfully')
+					return res.redirect('/posts')
+				} else {
+					next(err)
+				}
+			})
 
-	//if (e.message.match('duplicate key')) {
-	//	// string match
-	//	req.flash('error', 'Username exists')
-	//	return res.redirect('/signup')
-	//}
-	//next(e) // ???????error next
-	
+		} else {
+			next(err)
+		}
+	})
 })
 
 

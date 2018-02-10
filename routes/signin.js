@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 const checkNotLogin = require('../middlewares/check').checkNotLogin
+const fs = require('fs')
 
 // GET, /signin, sign in
 // pass
@@ -24,39 +25,35 @@ router.post('/', checkNotLogin, function (req, res, next) {
 		if (!password.length) {
 			throw new Error('Please input password.')
 		}
-	} catch (e) {
-		req.flash('error', e.message)
+	} catch (err) {
+		req.flash('error', err.message)
 		return res.redirect('back') // return???
 	}
 
-	let user = {
-		name: 'proverbs',
-		password: 'proverbs',
-		gender: 'm',
-		bio: 'bio',
-		avatar: 'avatar'
-	}
-
 	// query the database and check if username and password are correct
-	/*query..., user now is the return value*/
-	if (name.toString() !== user.name.toString()) {
-		req.flash('error', 'User not exists.')
-		return res.redirect('back')
-	} else {
-		if (password.toString() === user.password.toString()) {
-			req.flash('success', 'Login Successfully.')
-			// writer session ???
-			req.session.user = {name: user.name}
-			return res.redirect('/posts')
+	fs.readFile('users.json', 'utf-8', function (err, allUsers) {
+		if (!err) {
+			var fg = 0
+			allUsers = JSON.parse(allUsers)
+			for (let i = 0; i < allUsers.length; i ++) {
+				if (allUsers[i].name == name && allUsers[i].password == password) {
+					req.flash('success', 'Login Successfully.')
+					req.session.user = allUsers[i]
+					return res.redirect('/posts')
+				} else {
+					try {	
+						req.flash('error', 'User or Password not correct.')
+						return res.redirect('back')
+					} catch (err) {
+						next(err)
+					}
+				}
+			}
 		} else {
-			req.flash('error', 'Wrong Username or Password')
-			return res.redirect('back')
+			next(err)
 		}
-	}
-
-	// next(e)?????? error next()
+	})
 })
-
 
 
 // export router for 'signin'
